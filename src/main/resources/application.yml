@@ -1,0 +1,19 @@
+server:
+  port: 9000
+ 
+jsa.kafka.bootstrap-servers: localhost:9092
+jsa.kafka.consumer.group-id: inventory
+jsa.kafka.topic: inventory
+  
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: 127.0.0.1:9092
+      group-id: inventory
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    producer:
+      bootstrap-servers: 127.0.0.1:9092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializerz
