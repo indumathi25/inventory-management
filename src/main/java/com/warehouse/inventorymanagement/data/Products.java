@@ -2,7 +2,6 @@ package com.warehouse.inventorymanagement.data;
 
 import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Document(collection = "product")

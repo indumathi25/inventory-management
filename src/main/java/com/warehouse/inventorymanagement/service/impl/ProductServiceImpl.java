@@ -3,18 +3,23 @@ package com.warehouse.inventorymanagement.service.impl;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.warehouse.inventorymanagement.data.Article;
+import com.warehouse.inventorymanagement.data.Contain_articles;
 import com.warehouse.inventorymanagement.data.Product;
 import com.warehouse.inventorymanagement.data.Products;
 import com.warehouse.inventorymanagement.model.ProductMessage;
+import com.warehouse.inventorymanagement.repositories.ArticleRepository;
 import com.warehouse.inventorymanagement.repositories.ProductRepository;
 import com.warehouse.inventorymanagement.service.ProductService;
 import com.warehouse.inventorymanagement.utils.Publisher;
-//import com.warehouse.inventorymanagement.utils.Producer;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -22,18 +27,25 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired
 	private ProductRepository productRepository;
 	
+	private final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
+	
 	@Autowired
     private Publisher producer;
-
+	
+	@Autowired
+	private ArticleRepository articleRepository;
+	
 	@Override
-	public String fileUpload(MultipartFile file, HttpServletRequest request) {
-		String message = "";
+	public boolean loadProductsHandler(MultipartFile file, HttpServletRequest request) {
+		boolean message = false;
 		try {
 			InputStream inputStream = file.getInputStream();
 			ObjectMapper mapper = new ObjectMapper();
 
 			List<Products> products = Arrays.asList(mapper.readValue(inputStream, Products.class));
-
+			
+			logger.debug(String.format("sellProduct--> Name exist in DB --> %s", products));
+			
 			if (products != null && products.size() > 0) {
 				for (Products product : products) {
 					if (product.getProduct() != null) {
@@ -56,30 +68,37 @@ public class ProductServiceImpl implements ProductService {
 					}
 				}
 			}
-			message = "File Successfully Uploaded to DB";
+			message = true;
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			message = "Error in uploding the data";
 		}
 		return message;
 	}
 
+	
 	@Override
-	public String saveProduct(Product product) {
-		try {
-			Product isExist = productRepository.findByName(product.getName());
-			if (isExist != null) {
-				int existingQuantity = isExist.getQuantity();
-				int acummulatedQuantity = existingQuantity + 1;
-				product.setQuantity(acummulatedQuantity);
-			} else {
-				product.setQuantity(1);
+	public boolean updateProducts(List<com.productcatalogservice.data.Product> messages) {
+		if (messages.size() > 0) {
+			for (com.productcatalogservice.data.Product message : messages) {
+				if (message != null && message.getName() != null && message.getQuantity() != 0) {
+					com.warehouse.inventorymanagement.data.Product product = productRepository
+							.findByName(message.getName());
+					product.setName(message.getName());
+					product.setQuantity(message.getQuantity());
+					productRepository.save(product);
+					for (Contain_articles article : product.getContain_articles()) {
+						//
+						Optional<Article> articleObj = articleRepository
+								.findById(Integer.parseInt((article.getArt_id())));
+						int presentStockQuantity = articleObj.get().getStock();
+						int reducingStockQuantity = presentStockQuantity - 1 * Integer.parseInt(article.getAmount_of());
+						articleObj.get().setStock(reducingStockQuantity);
+						articleRepository.save(articleObj.get());
+					}
+				}
 			}
-			productRepository.save(product);
-		} catch (Exception ex) {
-			ex.printStackTrace();
+			return true;
 		}
-		return "Successfully Updated to DB";
+		return false;
 	}
-
 }

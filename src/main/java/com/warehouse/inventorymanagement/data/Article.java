@@ -12,15 +12,6 @@ public class Article
 	private int art_id;
  	private String name;
 	private int stock;
-	private int amount_of;
-	
-	public int getAmount_of() {
-		return amount_of;
-	}
-
-	public void setAmount_of(int amount_of) {
-		this.amount_of = amount_of;
-	}
 
 	@JsonProperty("art_id")
 	public int get_id() {

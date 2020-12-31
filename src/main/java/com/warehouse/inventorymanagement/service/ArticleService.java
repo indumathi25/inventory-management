@@ -6,7 +6,7 @@ import com.warehouse.inventorymanagement.data.Article;
 
 public interface ArticleService {
 
-	String fileUpload(MultipartFile file, HttpServletRequest request);
+	boolean loadArticleHandler(MultipartFile file, HttpServletRequest request);
 
 	String saveArticle(Article article);
 
