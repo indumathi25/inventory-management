@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
 
 			List<Products> products = Arrays.asList(mapper.readValue(inputStream, Products.class));
 			
-			logger.debug(String.format("sellProduct--> Name exist in DB --> %s", products));
+			logger.debug(String.format("loadProductsHandler --> %s", products));
 			
 			if (products != null && products.size() > 0) {
 				for (Products product : products) {
@@ -63,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
 							productObject.setQuantity(1);
 							productRepository.save(productObject);
 							
+							logger.debug("loadProductsHandler service --> Products saved in DB");
 							this.producer.sendMessage(new ProductMessage(productObject.getName(), productObject.getQuantity()));
 						}
 					}
@@ -78,26 +79,33 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Override
 	public boolean updateProducts(List<com.productcatalogservice.data.Product> messages) {
-		if (messages.size() > 0) {
-			for (com.productcatalogservice.data.Product message : messages) {
-				if (message != null && message.getName() != null && message.getQuantity() != 0) {
-					com.warehouse.inventorymanagement.data.Product product = productRepository
-							.findByName(message.getName());
-					product.setName(message.getName());
-					product.setQuantity(message.getQuantity());
-					productRepository.save(product);
-					for (Contain_articles article : product.getContain_articles()) {
-						//
-						Optional<Article> articleObj = articleRepository
-								.findById(Integer.parseInt((article.getArt_id())));
-						int presentStockQuantity = articleObj.get().getStock();
-						int reducingStockQuantity = presentStockQuantity - 1 * Integer.parseInt(article.getAmount_of());
-						articleObj.get().setStock(reducingStockQuantity);
-						articleRepository.save(articleObj.get());
+		try {
+			if (messages.size() > 0) {   
+				       
+				logger.debug(String.format("updateProducts--> Message --> %s", messages));
+				
+				for (com.productcatalogservice.data.Product message : messages) {
+					if (message != null && message.getName() != null && message.getQuantity() != 0) {
+						com.warehouse.inventorymanagement.data.Product product = productRepository
+								.findByName(message.getName());
+						product.setName(message.getName());
+						product.setQuantity(message.getQuantity());
+						productRepository.save(product);
+						for (Contain_articles article : product.getContain_articles()) {
+							//
+							Optional<Article> articleObj = articleRepository
+									.findById(Integer.parseInt((article.getArt_id())));
+							int presentStockQuantity = articleObj.get().getStock();
+							int reducingStockQuantity = presentStockQuantity - 1 * Integer.parseInt(article.getAmount_of());
+							articleObj.get().setStock(reducingStockQuantity);
+							articleRepository.save(articleObj.get());
+						}
 					}
 				}
+				return true;
 			}
-			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}

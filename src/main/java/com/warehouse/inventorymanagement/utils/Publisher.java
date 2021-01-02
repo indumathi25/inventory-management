@@ -17,9 +17,8 @@ public class Publisher {
 	private KafkaTemplate<String, ProductMessage> kafkaTemplate;
 
 	public void sendMessage(ProductMessage message) {
-		logger.info(String.format("$$ -> Producing message --> %s", message));
+		logger.info(String.format("$$ -> Producing message from inventory topic--> %s", message));
 		this.kafkaTemplate.send(TOPIC, message);
 	}
-	
 	
 }

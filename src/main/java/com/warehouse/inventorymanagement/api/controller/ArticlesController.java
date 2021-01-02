@@ -19,7 +19,7 @@ import com.warehouse.inventorymanagement.model.Response;
 import com.warehouse.inventorymanagement.service.ArticleService;
 
 @RestController
-@RequestMapping("/inventory/api/v1")
+@RequestMapping("/api/v1")
 public class ArticlesController {
 
 	@Autowired
@@ -59,6 +59,7 @@ public class ArticlesController {
 		}
 
 		logger.info("Articles added");
+		
 		map.put("articlesAdded", true);
 		list.add(map);
 		response.setCode(200);

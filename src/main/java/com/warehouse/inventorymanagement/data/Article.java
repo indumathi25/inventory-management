@@ -4,7 +4,6 @@ import org.springframework.data.annotation.Id;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 public class Article
 {
 	@Id

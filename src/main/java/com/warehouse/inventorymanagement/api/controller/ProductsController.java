@@ -19,7 +19,7 @@ import com.warehouse.inventorymanagement.model.Response;
 import com.warehouse.inventorymanagement.service.ProductService;
 
 @RestController
-@RequestMapping("/inventory/api/v1")
+@RequestMapping("/api/v1")
 public class ProductsController {
 
 	@Autowired
@@ -33,9 +33,11 @@ public class ProductsController {
 		Response response = new Response();
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		Map<String, Object> map = new HashMap<String, Object>();
+		
 		logger.info("addProductsFromFile request recieved");
 		if (file == null) {
-			logger.error("file is not present in request");
+			logger.error("File is not present in request");
+			
 			map.put("productssAdded", false);
 			list.add(map);
 			response.setCode(400);
@@ -47,7 +49,8 @@ public class ProductsController {
 		boolean message = productService.loadProductsHandler(file, request);
 		if (!message) {
 			logger.error("Error in uploading the products");
-			map.put("productssAdded", false);
+			
+			map.put("productsAdded", false);
 			list.add(map);
 			response.setCode(400);
 			response.setData(list);
@@ -56,7 +59,8 @@ public class ProductsController {
 		} 
 		
 		logger.info("File Successfully Uploaded to DB");
-		map.put("articlesAdded", true);
+		
+		map.put("productsAdded", true);
 		list.add(map);
 		response.setCode(200);
 		response.setData(list);

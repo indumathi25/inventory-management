@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.productcatalogservice.data.Product;
 import com.warehouse.inventorymanagement.service.ProductService;
 
-
 @Service
 public class UpdateProductsController {
 	

@@ -5,14 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.warehouse.inventorymanagement.api.controller.ProductsController;
 import com.warehouse.inventorymanagement.data.Article;
 import com.warehouse.inventorymanagement.data.Articles;
 import com.warehouse.inventorymanagement.repositories.ArticleRepository;
@@ -47,6 +45,7 @@ public class ArticleServiceImpl implements ArticleService {
 							continue;
 						}
 						articleRepository.save(article.getArticle().get(i));
+						logger.debug("loadArticleHandler service --> Articles saved in DB");
 					}
 				}
 			}
@@ -56,24 +55,6 @@ public class ArticleServiceImpl implements ArticleService {
 		}
 		logger.debug("loadArticleHandler service completed");
 		return message;
-	}
-
-	@Override
-	public String saveArticle(Article article) {
-
-		try {
-			Optional<Article> existingArticle = articleRepository.findById(article.getArt_id());
-			//
-			if (!existingArticle.isEmpty()) {
-				int existingStock = existingArticle.get().getStock();
-				int accumulatedstock = existingStock + article.getStock();
-				article.setStock(accumulatedstock);
-				articleRepository.save(article);
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return "Successfully Updated to DB";
 	}
 
 }
