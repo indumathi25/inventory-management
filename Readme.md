@@ -43,7 +43,7 @@ Package structures:
 API's:
 ---
 
-1. curl --location --request POST 'http://localhost:9000/inventory/api/v1/articles' \
+1. curl --location --request POST 'http://localhost:8082/inventory/api/v1/articles' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --form 'file=@"/Users/velan/Desktop/inventory.json"'
 
@@ -66,7 +66,7 @@ Response Body:
 ```
 
 
-2. curl --location --request POST 'http://localhost:9000/inventory/api/v1/products' \
+2. curl --location --request POST 'http://localhost:8082/inventory/api/v1/products' \
 --header 'Content-Type: application/json' \
 --form 'file=@"/Users/velan/Desktop/products.json"'
 
